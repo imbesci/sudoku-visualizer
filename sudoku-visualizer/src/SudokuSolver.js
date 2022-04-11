@@ -3,8 +3,9 @@ export default class SudokuSolver {
   constructor(board){
     this.board = board
   }
+
   validNum(stringNum){
-    if (stringNum.length === 1){ //make sure value is a whole number
+    if (stringNum.length !== 1){ //make sure value is a whole number
       return false
     }
     let parsedNum = parseInt(stringNum); //parse string into int
@@ -24,7 +25,7 @@ export default class SudokuSolver {
     let uncleanedBoard = this.board.split('') //split by character
     for (let i = 0; i<uncleanedBoard.length; i++){
       if (this.validNum(uncleanedBoard[i])){ //validate with validNum function
-        cleanedBoard.push(uncleanedBoard[i])
+        cleanedBoard.push(parseInt(uncleanedBoard[i]))
       }
     }
     if (cleanedBoard.length === 81){ 
@@ -35,17 +36,17 @@ export default class SudokuSolver {
   }
 
   configureBoardArray(){
-    let organizedBoard = [[],[],[],[],[],[],[],[],[]]  //array of 9 arrays
-
+    let organizedBoard = [[],[],[],[],[],[],[],[],[]];  //array of 9 arrays
     for (let i = 0; i<this.board.length; i++){
-      const targetArray = Math.floor(81/i);   //integer division by 9 to see what row its in
-      organizedBoard[targetArray].push(i);
+      let targetArray = Math.floor(i/9);   //integer division by 9 to see what row its in
+      organizedBoard[targetArray].push(this.board[i]);
     }
     this.board = organizedBoard;
+    return true
   }
 
   validInRow(num, row, column){
-    /* see if a number we are trying to insert */
+    /* make sure number to add isn't already in the row*/
     for (let i=0; i<this.board[row].length; i++){
       if (num === this.board[row][i]) {
         return false
@@ -55,15 +56,17 @@ export default class SudokuSolver {
   }
 
   validInColumn(num, row, column){
+    /* make sure number to add isn't already in the column*/
     for (let i=0; i<this.board.length; i++){
       if (num === this.board[i][column]) {
         return false
-      } 
-      return true
+      }
     }
+    return true
   }
 
   validInCube(num, row, column){
+    /* make sure number to add isn't already in the cube*/
     let cornerRow = row-(row % 3)
     let cornerColumn = column - (column % 3)
 
@@ -73,27 +76,46 @@ export default class SudokuSolver {
           return false
         }
       }
-    }
+    } 
     return true
   }
 
   validPosition(num, row, column){
+    /* checks all three validate methods at once*/
     return this.validInRow(num, row, column) && this.validInColumn(num, row, column) && this.validInCube(num, row, column)
   }
   
-  solve(){
+  solveBoard(){
     for (let i = 0; i < this.board.length; i++){
-      for (let j = 0; j < this.board.length; i++){
+      for (let j = 0; j < this.board.length; j++){
         if (this.board[i][j] === 0){
           for (let k = 1; k<10; k++){
-            //validate(k, i, j)
+            if (this.validPosition(k, i, j)){
+              this.board[i][j] = k
+              if (this.solveBoard()){
+                return true
+              } else {
+                this.board[i][j] = 0
+              }
+            }
           } 
+          return false
         }
       }
     } 
-    return
+    return this.board
   }
 
+  solve(){
+    const validation = this.validBoardFormat()
+    if (validation){
+        this.configureBoardArray()
+        this.solveBoard()
+        return this.board
+    } else {
+      console.log('Board error')
+    }
+  }
 
 } //class close
 
