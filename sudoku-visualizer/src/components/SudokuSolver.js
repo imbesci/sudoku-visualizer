@@ -106,10 +106,15 @@ export default class SudokuSolver {
     return this.board
   }
 
-  solve(){
+  clean(){
     const validation = this.validBoardFormat()
     if (validation){
-        this.configureBoardArray()
+        return this.configureBoardArray()
+    }
+  }
+
+  solve(){
+    if (this.clean()){
         this.solveBoard()
         return this.board
     } else {

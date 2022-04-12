@@ -1,4 +1,4 @@
-import SudokuSolver from "../../SudokuSolver";
+import SudokuSolver from "../SudokuSolver.js";
 
 const board = "0,4,9,0,3,1,0,0,0,0,3,0,0,7,0,9,8,0,8,0,0,0,4,0,0,0,0,0,0,6,1,5,7,8,0,2,0,5,0,2,8,4,1,0,6,0,1,0,0,0,0,0,0,5,0,8,5,7,0,3,4,0,9,0,0,2,0,0,5,3,7,0,0,0,4,0,2,0,5,0,1";
 const boardCrazy = "0,4,9,0,3,1,0,0,0,0,3,,,,,,,,0,0,7,0,9,8,0,8,0,0,0,4,0,0,0,0,0,0,6,1,5,7,8,0,2,0,5,0,2,8,4,1,0,6,0,1,0,0,0,0,0,0,5,0,8,5,7,0,3,4,0,9,0,0,2,0,0,5,3,7,0,0,0,4,0,2,0,5,0,1";
@@ -26,7 +26,6 @@ test('board cleaning with no commas', () => {
 test('board is properly formatted into 9x9 array', () => {
     puzzleNoCommas.configureBoardArray()
     expect(puzzleNoCommas.board).toStrictEqual([
-       //0  1  2  3  4  5  6  7  8 
         [0, 4, 9, 0, 3, 1, 0, 0, 0], 
         [0, 3, 0, 0, 7, 0, 9, 8, 0], 
         [8, 0, 0, 0, 4, 0, 0, 0, 0], 
