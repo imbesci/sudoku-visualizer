@@ -66,11 +66,17 @@ function Sudoku(){
   }
 
   if (!inputString){
-    return(<InputSudokuBoard handleBoard={handleBoardSubmit}/>)
+    return(
+      <div className="absolute w-full top-1/3 flex justify-center">
+        <InputSudokuBoard handleBoard={handleBoardSubmit}/>
+      </div>
+    )
   } else {
     return (
       <>
+        <div>
         <Grid arr={sudokuBoardRef.current.board} />
+        </div>
         <button onClick={generateSolution }>Solve board</button>
         <button id="stop-animation" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
       </>

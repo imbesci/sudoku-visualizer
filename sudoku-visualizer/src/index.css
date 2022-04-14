@@ -1,5 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Arimo&display=swap');
+
+*{
+    background-color: rgb(39 39 42);
+    font-family: 'Arimo', sans-serif;
+}
+
 .inputform{
-    width: 70%;
+    width: 75%;
 }
 
 .inputstring{
