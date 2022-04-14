@@ -1,10 +1,11 @@
 import TableItem from "./TableItem"
-import { useRef } from "react"
 
 
 export default function RowComponent(props){
+    const borderThickness = (props.data.row === 2 || props.data.row === 5) ? "border-slate-800 border-b-[5px]" : ""
+    
     return(
-        <tr key={props.tableRowKey}>
+        <tr className={borderThickness}>
             {
                 props.rowval.map((item,ind) => (
                 <TableItem key={ind} value={item} data={{row:props.data.row, col:ind}}/>

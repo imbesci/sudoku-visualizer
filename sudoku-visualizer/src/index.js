@@ -5,11 +5,19 @@ import './index.css';
 import SudokuSolver from './components/SudokuSolver';
 import InputSudokuBoard from './components/InputSudokuBoard'
 import Grid from './components/Grid';
+import GridForm from './components/GridForm'
+import HeaderComponent from './components/HeaderComponent';
+
 // import reportWebVitals from './reportWebVitals';
 
 function Sudoku(){
+  document.title = "Sudoku Solver"
+
   const [inputString, setInputString] = useState(null);
   const [showFinalBoard, setShowFinalBoard] = useState(null)
+  const [showGridView, setShowGridView] = useState(false)
+
+
   let sudokuBoardRef = useRef()
   let sudokuBoardCopyRef = useRef(null)
   let showSolutionAnimationRef = useRef(false)
@@ -24,20 +32,30 @@ function Sudoku(){
     }
   },[showFinalBoard])
 
-  function handleBoardSubmit(e){
-    e.preventDefault()
-    const inputValue = e.target[0].value
-    sudokuBoardRef.current = new SudokuSolver(inputValue)
+  function verifyCleanBoard(input) {
+    sudokuBoardRef.current = new SudokuSolver(input)
     if (sudokuBoardRef.current.clean()){
       sudokuBoardCopyRef.current = JSON.parse(JSON.stringify(sudokuBoardRef.current.board))
-      setInputString(inputValue)
+      setInputString(input)
+    } else {
+      return false
     }
+  }
+
+  function handleStringSubmit(e){
+    e.preventDefault()
+    const inputValue = e.target[0].value
+    verifyCleanBoard(inputValue)
     e.target.reset()
   }
 
   async function generateSolution(){
     if (showSolutionAnimationRef.current === false){
       const solutionPossible = sudokuBoardRef.current.solveBoard()
+      if (!solutionPossible){
+        alert('This is an impossible board!')
+        setInputString(null)
+      }
       showSolutionAnimationRef.current = true
       document.getElementById('stop-animation').style.visibility = "visible"
       const animationSteps = JSON.parse(JSON.stringify(sudokuBoardRef.current.animationSteps)).reverse()
@@ -47,7 +65,7 @@ function Sudoku(){
       for (let i = 0; i < incorrectElements.length; i++){
         for (let counter = 0; counter <= animationSteps[i][0]; counter ++){
           try {
-            await sleep(55)
+            await sleep(50)
             if (counter === animationSteps[i][0]){
               incorrectElements[i].style.backgroundColor = "rgb(145, 255, 147)"
             }
@@ -57,29 +75,59 @@ function Sudoku(){
           }
         }
       }
+      document.getElementById('stop-animation').style.visibility = "hidden"
     } 
   }
 
+  function handleGridViewClick(){
+    setShowGridView(!showGridView)
+  }
 
   function handleSkipAnimation(){ 
     document.getElementById('stop-animation').style.visibility = "hidden"
     setShowFinalBoard(true)
   }
   
+  function handleDigitInput(e) {
+    let value = e.target.value
+    let element = document.getElementById(`${e.target.id}`);
+    if (value === "0"){
+      element.style.backgroundColor = "yellow"
+    } else {
+      element.style.backgroundColor = "rgb(241 245 249)"
+    }
+  }
+
+  function handleGridSubmit(e) {
+    e.preventDefault()
+    console.log(e)
+    let gridInputString = ''
+    for (let i = 0; i < e.target.length; i++){
+      gridInputString =  gridInputString + e.target[i].value
+    }
+    verifyCleanBoard(gridInputString)
+    e.target.reset()
+  }
+  
   if (!inputString){
     return(
-      <div className="absolute w-full top-1/3">
-        <InputSudokuBoard handleBoard={handleBoardSubmit}/>
+      <>
+      <div className={showGridView? "absolute w-full top-24 overflow-hidden" : "absolute w-full top-1/3"}>
+        {!showGridView && <InputSudokuBoard handleGridViewClick={handleGridViewClick} handleString={handleStringSubmit}/>}
+        {showGridView && <GridForm gridSwitch={handleGridViewClick} handleGridSubmit={handleGridSubmit} handleDigitInput = {handleDigitInput} />}
       </div>
-    )
+      </>
+      )
   } else {
     return (
       <>
-        <div>
-        <Grid arr={sudokuBoardRef.current.board} />
+      <div className="absolute w-full top-24 grid grid-rows-1 grid-flow-col">
+        <div className="justify-self-center">
+          <Grid arr={sudokuBoardRef.current.board} />
+          <button className="mt-2.5 rounded-md px-12 py-1 m-0 bg-green-300" onClick={generateSolution}>Solve board</button>
+          <button id="stop-animation" className="mt-2.5 rounded-md px-12 py-1 m-0 bg-yellow-200" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
         </div>
-        <button onClick={generateSolution}>Solve board</button>
-        <button id="stop-animation" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
+      </div>
       </>
     )
   }

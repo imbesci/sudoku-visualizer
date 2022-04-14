@@ -1,17 +1,15 @@
-export default function TableItem(props){
-    let tableValue = props.value
 
-    
-    if (props.value === 0){
-        return(
-            <td className="table-cell incorrect">
-                {tableValue}
-            </td>
-        )
+export default function TableItem(props){
+    let checkForZero = props.value === 0
+    let borderThickness = (props.data.col === 2 || props.data.col === 5) ? "border-slate-800 border-r-[5px]" : "border-slate-800 border-r-[1px]"
+    if (checkForZero){
+        borderThickness = borderThickness + ' incorrect'
     }
+    
+    
     return(
-        <td className="table-cell">
-            {tableValue}
+        <td className={"table-cell h-14 w-14 text-center border-b-[1px] bg-slate-100 " + borderThickness} >
+            {props.value}
         </td>
     )
 }
