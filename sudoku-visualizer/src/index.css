@@ -4,16 +4,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Arimo&display=swap');
 
 *{
-    background-color: rgb(39 39 42);
+    background-color: rgb(65, 84, 107);
     font-family: 'Arimo', sans-serif;
-}
-
-.inputform{
-    width: 75%;
-}
-
-.inputstring{
-    width:100%;
 }
 
 

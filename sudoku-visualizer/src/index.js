@@ -60,14 +60,15 @@ function Sudoku(){
     } 
   }
 
+
   function handleSkipAnimation(){ 
     document.getElementById('stop-animation').style.visibility = "hidden"
     setShowFinalBoard(true)
   }
-
+  
   if (!inputString){
     return(
-      <div className="absolute w-full top-1/3 flex justify-center">
+      <div className="absolute w-full top-1/3">
         <InputSudokuBoard handleBoard={handleBoardSubmit}/>
       </div>
     )
@@ -77,7 +78,7 @@ function Sudoku(){
         <div>
         <Grid arr={sudokuBoardRef.current.board} />
         </div>
-        <button onClick={generateSolution }>Solve board</button>
+        <button onClick={generateSolution}>Solve board</button>
         <button id="stop-animation" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
       </>
     )
