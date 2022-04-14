@@ -2,6 +2,9 @@
 export default class SudokuSolver {
   constructor(board){
     this.board = board
+    //steps appended in an array [[value, row, column], [value, row, column]]
+    this.animationSteps = []
+    this.wrongLocations = []
   }
 
   validNum(stringNum){
@@ -30,6 +33,11 @@ export default class SudokuSolver {
     }
     if (cleanedBoard.length === 81){ 
       this.board = cleanedBoard //make sure board matches correct sudoku board length
+      for (let i = 0; i < cleanedBoard.length; i++) {
+        if (cleanedBoard[i] === 0){
+          this.wrongLocations.push(i)
+        }
+      }
       return true
     }
     return false
@@ -85,6 +93,7 @@ export default class SudokuSolver {
     return this.validInRow(num, row, column) && this.validInColumn(num, row, column) && this.validInCube(num, row, column)
   }
   
+
   solveBoard(){
     for (let i = 0; i < this.board.length; i++){
       for (let j = 0; j < this.board.length; j++){
@@ -93,6 +102,7 @@ export default class SudokuSolver {
             if (this.validPosition(k, i, j)){
               this.board[i][j] = k
               if (this.solveBoard()){
+                this.animationSteps.push([k, i, j])
                 return true
               } else {
                 this.board[i][j] = 0
@@ -103,8 +113,9 @@ export default class SudokuSolver {
         }
       }
     } 
-    return this.board
+    return 'Board is already solved'
   }
+
 
   clean(){
     const validation = this.validBoardFormat()

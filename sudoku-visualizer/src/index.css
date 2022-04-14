@@ -5,3 +5,8 @@
 .inputstring{
     width:100%;
 }
+
+
+.incorrect {
+    background-color:yellow;
+}

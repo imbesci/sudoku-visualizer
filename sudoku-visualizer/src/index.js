@@ -9,25 +9,73 @@ import Grid from './components/Grid';
 
 function Sudoku(){
   const [inputString, setInputString] = useState(null);
-  let sudokuBoard = useRef()
+  const [showFinalBoard, setShowFinalBoard] = useState(null)
+  let sudokuBoardRef = useRef()
+  let sudokuBoardCopyRef = useRef(null)
+  let showSolutionAnimationRef = useRef(false)
+  let wrongLocationsRef = useRef(null) 
+
+  useEffect(() => {
+    if (showFinalBoard) {
+      const boardElements = document.getElementsByClassName("table-cell")
+      for (let i = 0; i < wrongLocationsRef.current.length; i++){
+        boardElements[wrongLocationsRef.current[i]].style.backgroundColor = "rgb(145, 255, 147)"
+      }
+    }
+  },[showFinalBoard])
 
   function handleBoardSubmit(e){
     e.preventDefault()
     const inputValue = e.target[0].value
-    sudokuBoard.current = new SudokuSolver(inputValue)
-    if (sudokuBoard.current.clean()){
+    sudokuBoardRef.current = new SudokuSolver(inputValue)
+    if (sudokuBoardRef.current.clean()){
+      sudokuBoardCopyRef.current = JSON.parse(JSON.stringify(sudokuBoardRef.current.board))
       setInputString(inputValue)
     }
     e.target.reset()
   }
 
-    if (!inputString){
-      return(<InputSudokuBoard handleBoard={handleBoardSubmit}/>)
-    }
+  async function generateSolution(){
+    if (showSolutionAnimationRef.current === false){
+      const solutionPossible = sudokuBoardRef.current.solveBoard()
+      showSolutionAnimationRef.current = true
+      document.getElementById('stop-animation').style.visibility = "visible"
+      const animationSteps = JSON.parse(JSON.stringify(sudokuBoardRef.current.animationSteps)).reverse()
+      wrongLocationsRef.current = sudokuBoardRef.current.wrongLocations
+      function sleep(time) { return new Promise((resolve) => setTimeout(resolve, time)); } //function to slow loop speed
+      const incorrectElements = document.getElementsByClassName("incorrect")
+      for (let i = 0; i < incorrectElements.length; i++){
+        for (let counter = 0; counter <= animationSteps[i][0]; counter ++){
+          try {
+            await sleep(55)
+            if (counter === animationSteps[i][0]){
+              incorrectElements[i].style.backgroundColor = "rgb(145, 255, 147)"
+            }
+            incorrectElements[i].innerHTML = counter
+          } catch {
+            return
+          }
+        }
+      }
+    } 
+  }
 
-    return(
-      <Grid arr={sudokuBoard.current.board} />
+  function handleSkipAnimation(){ 
+    document.getElementById('stop-animation').style.visibility = "hidden"
+    setShowFinalBoard(true)
+  }
+
+  if (!inputString){
+    return(<InputSudokuBoard handleBoard={handleBoardSubmit}/>)
+  } else {
+    return (
+      <>
+        <Grid arr={sudokuBoardRef.current.board} />
+        <button onClick={generateSolution }>Solve board</button>
+        <button id="stop-animation" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
+      </>
     )
+  }
 }
 
 

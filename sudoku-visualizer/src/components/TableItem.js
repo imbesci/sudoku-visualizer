@@ -1,8 +1,16 @@
 export default function TableItem(props){
     let tableValue = props.value
-    let keygen =`${props.data.row}${props.data.col}`
+
+    
+    if (props.value === 0){
+        return(
+            <td className="table-cell incorrect">
+                {tableValue}
+            </td>
+        )
+    }
     return(
-        <td>
+        <td className="table-cell">
             {tableValue}
         </td>
     )
