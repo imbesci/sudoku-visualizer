@@ -8,7 +8,7 @@ export default function TableItem(props){
     
     
     return(
-        <td className={"table-cell h-14 w-14 text-center border-b-[1px] bg-slate-100 " + borderThickness} >
+        <td className={"table-cell text-3xl h-14 w-14 text-center border-b-[1px] bg-slate-100 " + borderThickness} >
             {props.value}
         </td>
     )

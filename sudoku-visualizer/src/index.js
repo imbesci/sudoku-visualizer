@@ -13,8 +13,7 @@ import HeaderComponent from './components/HeaderComponent';
 function Sudoku(){
   document.title = "Sudoku Solver"
 
-  const [inputString, setInputString] = useState(null);
-  const [showFinalBoard, setShowFinalBoard] = useState(null)
+  const [inputString, setInputString] = useState({inputStringValue: null, showFinalBoard: false});
   const [showGridView, setShowGridView] = useState(false)
 
 
@@ -24,19 +23,19 @@ function Sudoku(){
   let wrongLocationsRef = useRef(null) 
 
   useEffect(() => {
-    if (showFinalBoard) {
+    if (inputString.showFinalBoard) {
       const boardElements = document.getElementsByClassName("table-cell")
       for (let i = 0; i < wrongLocationsRef.current.length; i++){
         boardElements[wrongLocationsRef.current[i]].style.backgroundColor = "rgb(145, 255, 147)"
       }
     }
-  },[showFinalBoard])
+  },[inputString.showFinalBoard])
 
   function verifyCleanBoard(input) {
     sudokuBoardRef.current = new SudokuSolver(input)
     if (sudokuBoardRef.current.clean()){
       sudokuBoardCopyRef.current = JSON.parse(JSON.stringify(sudokuBoardRef.current.board))
-      setInputString(input)
+      setInputString({...inputString, inputStringValue:input })
     } else {
       return false
     }
@@ -85,7 +84,7 @@ function Sudoku(){
 
   function handleSkipAnimation(){ 
     document.getElementById('stop-animation').style.visibility = "hidden"
-    setShowFinalBoard(true)
+    setInputString({...inputString, showFinalBoard: true})
   }
   
   function handleDigitInput(e) {
@@ -108,8 +107,13 @@ function Sudoku(){
     verifyCleanBoard(gridInputString)
     e.target.reset()
   }
+
+  function handleReset() {
+    showSolutionAnimationRef.current = false
+    setInputString({inputStringValue: null, showFinalBoard: false})
+  }
   
-  if (!inputString){
+  if (!inputString.inputStringValue){
     return(
       <>
       <div className={showGridView? "absolute w-full top-24 overflow-hidden" : "absolute w-full top-1/3"}>
@@ -121,11 +125,13 @@ function Sudoku(){
   } else {
     return (
       <>
+
       <div className="absolute w-full top-24 grid grid-rows-1 grid-flow-col">
+      <button className='absolute left-1/4  rounded-md px-6 py-1 m-0 bg-yellow-200' onClick={handleReset}>Back</button> 
         <div className="justify-self-center">
           <Grid arr={sudokuBoardRef.current.board} />
-          <button className="mt-2.5 rounded-md px-12 py-1 m-0 bg-green-300" onClick={generateSolution}>Solve board</button>
-          <button id="stop-animation" className="mt-2.5 rounded-md px-12 py-1 m-0 bg-yellow-200" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
+          <button className="mt-2.5 ml-10 mx-12 rounded-md px-12 py-1 m-0 bg-green-300" onClick={generateSolution}>Solve board</button>
+          <button id="stop-animation" className="mt-2.5 ml-10 rounded-md px-16 py-1 m-0 bg-red-300" style={{visibility:"hidden"}} onClick={handleSkipAnimation}>Skip</button>
         </div>
       </div>
       </>
